@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Northwind_MVC.Models.Context;
+using Northwind_MVC.Models.IdentityContextNW;
+using System;
 
 namespace Northwind_MVC
 {
@@ -24,20 +25,33 @@ namespace Northwind_MVC
             services.AddControllersWithViews();
 
             //Adding Dbcontext Path
-            services.AddDbContext<NORTHWNDContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultString")));
+            services.AddDbContext<NorthwindContextIdentity>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultString")));
 
             //Adding AspNetIdentity
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<NORTHWNDContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<NorthwindContextIdentity>();
 
             //Account options
             services.Configure<IdentityOptions>(x =>
             {
                 x.Password.RequiredUniqueChars = 0;
-                x.Password.RequiredLength = 6;
+                x.Password.RequiredLength = 4;
                 x.Password.RequireUppercase = false;
                 x.Password.RequireLowercase = false;
-                x.Password.RequireDigit = true;
-                x.Password.RequireNonAlphanumeric = true;
+                x.Password.RequireDigit = false;
+                x.Password.RequireNonAlphanumeric = false;
+            });
+
+            //COOKIES YES I LOVE COOKIES
+            services.ConfigureApplicationCookie(cookie =>
+            {
+                cookie.Cookie = new Microsoft.AspNetCore.Http.CookieBuilder
+                {
+                    Name = "Sugar-free-high-fiber-low-fat-amazing-cookie"
+                };
+                cookie.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Home/Login");
+                cookie.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Home/Login");
+                cookie.SlidingExpiration = true;
+                cookie.ExpireTimeSpan = TimeSpan.FromMinutes(30);
             });
         }
 
