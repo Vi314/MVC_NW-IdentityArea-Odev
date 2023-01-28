@@ -1,0 +1,62 @@
+
+FUNDAMENTALS
+	1- Add connection string for your server in AppSettings.json,
+	2- Add EFCore, EFCoreSqlServer, EFCoreTools, AspNetIdentity packages to the project,
+	3- Add Entity and context folders into Models
+	4- Create Context class for your database, with IdentityDbContext inherition //Because northwind is already prepared we will scaffold instead
+	5- Add Identity Service and Context Service into Startup
+	6- Inject the two services into HomeController
+
+IDENTITY
+		Preparation
+	7- Add Login and Register Actions into the HomeController and create views for both
+	8- Add a ViewModels folder and open a RegisterVM and LoginVM class in it
+	9- RegisterVM must have Properties; Username, Email, Password, PasswordRepeat and they all must be Required 
+	10- LoginVM must have Properties; Username,Password and they all must be Required
+	11- Make a basic Input design for both Register and Login html pages that correspond to their respective Properties
+	12- Add post attributed overloads for Register and Login actions 
+	13- Add a Configure service that takes IdentityOptions to configure the register requirements
+
+		Register
+	14- Have the Register Post take a RegisterVM class variable from inside it's View 
+	15- Put the RegisterVM through the database compatibility checks
+	16- If the posted RegisterVM is compatible save it to the databse on AspNetUsers table as an IdentityUser if not send the user back to Register page with the model being filled with the data they had entered
+
+		Login
+	17- Have the Login post take a LoginVM class variable from inside it's view
+	18- Check if the entered Username and password in the View is present in the database
+	19- If the values are not present send the user to the login page again if they are present send them to the main page with the associated priveledges of their account
+
+		Login Cookies
+	20-	Add a ConfigureApplicationCookie service into startup 
+	21- Give a name to the cookie, add a login path(login view) and a view to go if the user attempts to access a page they are not allowed to 
+	22- Add a lifespan to the cookie of 30 minutes
+
+LAYOUT
+		_LayoutPrimary
+	23- Add a navbar with three sections; 
+			LeftMost section:Includes The Logo which when clicked will take the user to the Home/Index 
+			Middle section:Includes the categories that exist in the categories table, when clicked the products in said category will be listed
+			RightMost section:Includes a login button, signup button and a searchbar
+	24- @RenderBody
+	25- Footer with information pretending to be usefull
+
+CONTROLLERS AND ACTIONS
+		Main MVC
+	26-Make HomeController;
+			1-Index: A welcome message at the top and 12 products listed at the bottom in 3 rows 
+			2-Login: Mentioned before but with prettier design 
+			3-Register: Mentioned before but with prettier design 
+	27-Make CategoryController;
+			-Category controller must have an action for each category that is present in the database
+	28-Make ProductController;
+			-ProductDetails: Will have a custom path "selected-product/{productName}/{productId}",
+				Will show the details of the selected product automatically,
+				May only be accessed through selection of a product
+				
+		Admin Area MVC
+	29-Make HomeController - Must be connected to AdminArea with attribute,
+							 Must be only accesible after login;
+			1- Will have the aforementioned Categories linked to products but with CRUD operations active
+			2- Categories: Will list categories and have options to update or create them //Delete may not be added as it is a strictly backend operation with the current algorithm
+			3- Orders: CRUD operations for the Orders table in Northwind
